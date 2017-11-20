@@ -1,6 +1,6 @@
 # Lispfuck lexer+parser
 
-A simple lexer+parser of brainfuck to c
+A simple lexer+parser to lispfuck
 
 ## Team
 
