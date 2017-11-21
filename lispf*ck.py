@@ -41,19 +41,17 @@ lexer_rules =  [
 # PARSER
 
 parser_rules = [
-    ('function: FUNCTION FUNCTION_NAME PARAMS'),
-    ('atom: PARAMS', None),
-    ('atom: FUNCTION',  None),
-    ('atom: FUNCTION_NAME', None),
-    ('atom: NUMBER', float),
+    ('function: def atom', addAction(name, operation)),
+    ('atom: FUNCTION_NAME', lambda x: x),
+    ('def: FUNCTION', lambda x: x),
 ]
-
 
 lexer = ox.make_lexer(lexer_rules)
 parser = ox.make_parser(parser_rules, tokens_list)
-aux = parser(lexer('def f ()'))
-
+aux = parser(lexer('def f'))
 print(aux)
 
+# Parser functions
 
-# Functions
+def addAction(name, operation):
+    return [name, operation]
