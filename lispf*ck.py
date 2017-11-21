@@ -18,9 +18,10 @@ tokens_list = [
     'PARAMS',
 ]
 
+
 # LEXER
 
-lexer = ox.make_lexer([
+lexer_rules =  [
     (tokens_list[0], r'\d+(\.\d*)?(e-?\d+)?'),
     (tokens_list[1], r'^\s*do'),
     (tokens_list[2], r'^\s*print'),
@@ -33,20 +34,24 @@ lexer = ox.make_lexer([
     (tokens_list[9], r'^\s*do-before'),
     (tokens_list[10], r'^\s*do-after'),
     (tokens_list[11], r'[()]'),
-])
+]
 
+
+lexer = ox.make_lexer(lexer_rules)
 aux = lexer('()')
 print(aux)
 
 # PARSER
 
-parser = ox.make_parser([
+parser_rules = [
     ('function: FUNCTION FUNCTION_NAME PARAMS')
     ('atom: PARAMS', lambda x: x),
     ('atom: FUNCTION',  lambda x: x),
     ('atom: FUNCTION_NAME', lambda x: x),
     ('atom: NUMBER', float),
-], tokens_list)
+]
+
+parser = ox.make_parser(parser_rules, tokens_list)
 
 
 # Use Variable in the middle of strings
