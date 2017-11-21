@@ -48,7 +48,7 @@ parser_rules = [
     ('atom: NUMBER', lambda x: float(x)),
 ]
 
-lexer = ox.make_parser(lexer_rules)
+lexer = ox.make_lexer(lexer_rules)
 parser = ox.make_parser(parser_rules, tokens_list)
 
 
