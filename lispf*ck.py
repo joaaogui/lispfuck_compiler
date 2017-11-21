@@ -16,6 +16,7 @@ tokens_list = [
     'DO_BEFORE',
     'DO_AFTER',
     'PARAMS',
+    'OPERATORS',
 ]
 
 
@@ -34,31 +35,25 @@ lexer_rules =  [
     (tokens_list[9], r'^\s*do-before'),
     (tokens_list[10], r'^\s*do-after'),
     (tokens_list[11], r'[()]'),
+    (tokens_list[12], r'/\((.*?)\)/'),
 ]
-
-
-lexer = ox.make_lexer(lexer_rules)
-aux = lexer('()')
-print(aux)
 
 # PARSER
 
 parser_rules = [
-    ('function: FUNCTION FUNCTION_NAME PARAMS')
-    ('atom: PARAMS', lambda x: x),
-    ('atom: FUNCTION',  lambda x: x),
-    ('atom: FUNCTION_NAME', lambda x: x),
+    ('function: FUNCTION FUNCTION_NAME PARAMS'),
+    ('atom: PARAMS', None),
+    ('atom: FUNCTION',  None),
+    ('atom: FUNCTION_NAME', None),
     ('atom: NUMBER', float),
 ]
 
+
+lexer = ox.make_lexer(lexer_rules)
 parser = ox.make_parser(parser_rules, tokens_list)
+aux = parser(lexer('def f ()'))
+
+print(aux)
 
 
-# Use Variable in the middle of strings
-
-# name = 'Frank'
-# age = 12
-
-# # vars() is the local dictionary containing variables name and age as keys
-# # needs Python273 or Python3 and higher
-# #print("Hello {tokens_list[0]}, you are {age} years old.".format(**vars()))
+# Functions
