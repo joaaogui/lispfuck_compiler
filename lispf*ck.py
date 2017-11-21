@@ -14,40 +14,30 @@ def add_to_list(first_param, second_param):
 
 
 # Tokens: List of tokens for lispf*ck
-tokens_list = [
-    'NUMBER',
-    'CHARACTER',
-    'L_PARANTHESIS',
-    'R_PARANTHESIS',
-    'COMMENT',
-    'NEW_LINE',
-]
+lexer = ox.make_lexer([
+	('OPEN', r'\('),
+	('CLOSE', r'\)'),
+	('SYMBOL', r'[-a-zA-Z]+'),
+	('NUMBER', r'[0-9]+'),
+	('ignore_COMMENT', r';[^\n]*'),
+	('ignore_NEWLINE', r'\s+'),
+])
 
-# Lexer regular expressions to user tokens list
-lexer_rules = [
-    (tokens_list[0], r'\d+(\.\d*)?(e-?\d+)?'),
-    (tokens_list[1],
-     r'^([\'|\"]{1})+(?:(\w+|\W+|\d+|\D+|\s+|\S+|))+([\'|\"]{1})$'),
-    (tokens_list[2], r'[(]'),
-    (tokens_list[3], r'[)]'),
-    (tokens_list[4], r';[^\n]*'),
-    (tokens_list[5], r'\s+'),
-]
 
-# Parser rules to create AST
-parser_rules = [
-    ('exec_block : L_PARANTHESIS R_PARANTHESIS', lambda x, y: '()'),
-    ('exec_block : L_PARANTHESIS expr R_PARANTHESIS', lambda x, y, z: y),
-    ('expr : atom expr', lambda x, y: (x,) + y),
-    ('expr : atom', lambda x: (x,)),
-    ('atom : exec_block', lambda x: x),
-    ('atom : CHARACTER', lambda x: x),
-    ('atom : NUMBER', lambda x: float(x)),
-]
+tokens = ['SYMBOL',
+      	'NUMBER',
+      	'OPEN',
+      	'CLOSE']
 
-lexer = ox.make_lexer(lexer_rules)
-parser = ox.make_parser(parser_rules, tokens_list)
-
+parser = ox.make_parser([
+    	('sexpr : OPEN CLOSE', lambda x,y: '()'),
+    	('sexpr : OPEN expr CLOSE', lambda x,y,z: y),
+    	('expr : atom expr', lambda x,y: (x,) + y),
+    	('expr : atom', lambda x: (x,)),
+    	('atom : sexpr', lambda x: x),
+    	('atom : NUMBER', lambda x: x),
+    	('atom : SYMBOL', lambda x: x),
+], tokens)
 # Click Module
 
 
