@@ -3,9 +3,9 @@ import re
 import click
 import pprint
 
-# Get ARGS from command line
+# Click Module
 @click.command()
-@click.argument('lispf_ck', type=click.File('r'))
+@click.argument('source', type=click.File('r'))
 
 # Tokens: List of tokens for lispf*ck
 tokens_list = [
@@ -24,7 +24,19 @@ lexer_rules =  [
     (tokens_list[2], r'[(]'),
     (tokens_list[3], r'[)]'),
     (tokens_list[4], r';[^\n]*'),
-    (tokens_list[5], r'\s+')
+    (tokens_list[5], r'\s+'),
+    
+]
+
+# Parser rules to create AST
+parser_rules = [
+    ('exec_block : L_PARANTHESIS R_PARANTHESIS', lambda x,y: '()'),
+    ('exec_block : L_PARANTHESIS expr R_PARANTHESIS', lambda x,y,z: y),
+    ('expr : atom expr',  lambda x,y: (x,) + y),
+    ('expr : atom', lambda x: (x,)),
+    ('atom: exec_block', lambda x: x),
+    ('atom: CHARACTER', lambda x: x),
+    ('atom: NUMBER', lambda x: float(x)),
 ]
 
 # Parser functions
@@ -34,21 +46,10 @@ def create_list(l_paranthesis, r_paranthesis):
 def add_to_list(first_param, second_param):
     return(first_param,) + second_param
 
-# Parser rules to create AST
-parser_rules = [
-    ('exec_block: L_PARANTHESIS R_PARANTHESIS', lambda x,y: '()'),
-    ('exec_block: L_PARANTHESIS expr R_PARANTHESIS', lambda x,y,z: y),
-    ('expr: atom expr',  lambda x: (x,)),
-    ('expr: atom', lambda x: (x,)),
-    ('atom: exec_block', lambda x: x),
-    ('atom: CHARACTER', lambda x: x),
-    ('atom: NUMBER', lambda x: float(x)),
-]
-
 # Run Application
-def ast(lispf_ck):
+def ast(source):
 
-	lispfu_ck_code = lispf_ck.read()
+	lispfu_ck_code = source.read()
 	tokens = lexer(lispfu_ck_code)
 	tree = parser(tokens)
 	pprint.pprint(tree)

@@ -4,7 +4,7 @@ A simple lexer+parser to lispfuck
 
 ## Usage
 
-To execute: python3 lispf_ck [lispf_ck_code.lf]
+To execute: python3 lispf_ck.py [lispf_ck_code.lf]
 
 ## Team
 
