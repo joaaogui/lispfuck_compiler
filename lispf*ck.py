@@ -19,8 +19,8 @@ tokens_list = [
     'CHARACTER',
     'L_PARANTHESIS',
     'R_PARANTHESIS',
-    'avoid_COMMENT',
-    'avoid_NEW_LINE',
+    'ignore_COMMENT',
+    'ignore_NEWLINE',
 ]
 
 # Lexer regular expressions to user tokens list
@@ -29,19 +29,19 @@ lexer_rules = [
 	('R_PARANTHESIS', r'\)'),
 	('CHARACTER', r'[-a-zA-Z]+'),
 	('NUMBER', r'[0-9]+'),
-	('avoid_COMMENT', r';[^\n]*'),
-	('avoid_NEWLINE', r'\s+'),
+	('ignore_COMMENT', r';[^\n]*'),
+	('ignore_NEWLINE', r'\s+'),
 ]
 
 # Parser rules to create AST
 parser_rules = [
-    ('exec_block : L_PARANTHESIS R_PARANTHESIS', lambda x, y: '()'),
-    ('exec_block : L_PARANTHESIS expr R_PARANTHESIS', lambda x, y, z: y),
-    ('expr : atom expr', lambda x, y: (x,) + y),
-    ('expr : atom', lambda x: (x,)),
-    ('atom : exec_block', lambda x: x),
-    ('atom : CHARACTER', lambda x: x),
-    ('atom : NUMBER', lambda x: float(x)),
+    	('block : L_PARANTHESIS R_PARANTHESIS', lambda x,y: '()'),
+    	('block : L_PARANTHESIS expr R_PARANTHESIS', lambda x,y,z: y),
+    	('expr : atom expr', lambda x,y: (x,) + y),
+    	('expr : atom', lambda x: (x,)),
+    	('atom : block', lambda x: x),
+    	('atom : NUMBER', lambda x: x),
+    	('atom : CHARACTER', lambda x: x),
 ]
 
 lexer = ox.make_lexer(lexer_rules)
@@ -55,9 +55,8 @@ parser = ox.make_parser(parser_rules, tokens_list)
 def ast(lispf_ck):
     lispfu_ck_code = lispf_ck.read()
     tokens = lexer(lispfu_ck_code)
-    print(tokens)
-    # tree = parser(tokens)
-    # pprint.pprint(tree)
+    tree = parser(tokens)
+    pprint.pprint(tree)
 
 
 if __name__ == '__main__':
