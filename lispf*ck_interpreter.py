@@ -1,10 +1,9 @@
 import ox
 
- # TOKENS
-
+ # Lexer
 tokens_list = [
      'NUMBER',
-     'BLOCK',
+     'DO',
      'PRINT',
      'ADD',
      'LOOP',
@@ -13,14 +12,10 @@ tokens_list = [
      'FUNCTION',
      'DO_BEFORE',
      'DO_AFTER',
+     'INCREMENT',
+     'DECREMENT',
+     'READ',
 ]
- 
-parser_rules = [
-    ('atom : NUMBER', lambda x: x),
-    ('atom : PRINT', lambda x: x),
-]
-
- # LEXER
 
 lexer = ox.make_lexer([
     (tokens_list[0], r'[0-9]+'),
@@ -35,8 +30,53 @@ lexer = ox.make_lexer([
     (tokens_list[9], r'^\s*do[-]after'),
 ])
 
+# Parser
 
-
+parser_rules = [
+    ('operand : NUMBER', lambda x: x),
+    ('operand : PRINT', lambda x: x),
+]
 
 parser = ox.make_parser(parser_rules, tokens_list)
+
+
+# Evaluate
+
+def do_after(operand, source_array):
+    
+    array = []
+    index = 0
+    array_size = len(source_array)
+    
+    while index < array_size:
+        if source_array[index] == 'add' or source_array[index] == 'sub':
+            array.append(source_array[index])
+            index += 1
+        
+        array.append(source_array[index])
+        array.append(operand)
+
+        index += 1
+
+    return array
+
+def do_before(operand, source_array):
+    
+    array = []
+    index = 0
+    array_size = len(source_array)
+    
+    while index < size:
+        array.append(operand)
+        array.append(source_array[index])
+        if source_array[index] == 'add' or source_array[index] == 'sub':
+            index += 1
+            array.append(source_array[index])
+
+        index += 1
+
+    return array
+
+
+
   
