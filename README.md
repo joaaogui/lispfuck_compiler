@@ -1,10 +1,16 @@
-# Lispfuck lexer+parser
+# Lispfuck lexer+parser and interpreter
 
-A simple lexer+parser to lispfuck
+A simple lexer+parser and a interpreter to lispfuck.
 
 ## Usage
 
-To execute: python3 lispf_ck.py [lispf_ck_code.lf]
+### Lexer+parser
+
+To execute: python3 lispf*ck.py lispfuck_code/<lispf_ck_code.lf>
+
+### Interpreter
+
+To execute: python3 lispf*ck_interpreter.py lispfuck_code/<lispf_ck_code.lf>
 
 ## Team
 
