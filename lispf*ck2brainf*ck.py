@@ -1,12 +1,8 @@
-from sys import argv
-import pprint
 import ox
+from sys import argv
 
-source_code, lf_code, file_output = argv
 
-input_file = open(lf_code)
-code2Compile = input_file.read()
-
+# List Of Tokens
 tokens_list = ['LOOP',
                'DEC',
                'INC',
@@ -22,7 +18,7 @@ tokens_list = ['LOOP',
                'ADD',
                'SUB',
                'NUMBER',
-]
+               ]
 
 
 # Tokens
@@ -51,8 +47,8 @@ lexer = ox.make_lexer([
 parser = ox.make_parser([
     ('expr : LPAR RPAR', lambda x, y: '[]'),
     ('expr : LPAR term RPAR', lambda x, y, z: y),
-    ('term : atom term', lambda x, y: [x,] + y),
-    ('term : atom', lambda x:[x,]),
+    ('term : atom term', lambda x, y: [x, ] + y),
+    ('term : atom', lambda x:[x, ]),
     ('atom : expr', lambda x:x),
     ('atom : DEC', lambda x:x),
     ('atom : INC', lambda x:x),
@@ -72,23 +68,16 @@ parser = ox.make_parser([
 
 class BrainfuckCompiler:
 
-    def right(self): 
-        self.file_output.write('>')
+    def compile(self, commands=None):
+        if commands is None:
+            commands = self.ast
 
-    def left(self):
-        self.file_output.write('<')
+        head, *tail = commands
 
-    def inc(self):
-        self.file_output.write('+')
-
-    def dec(self):
-        self.file_output.write('-')
-
-    def dot(self):
-        self.file_output.write('.')
-
-    def comma(self):
-        self.file_output.write(',')
+        if head in self.node_to_func:
+            self.node_to_func[head]()
+        elif head in self.node_to_func_with_args:
+            self.node_to_func_with_args[head](tail)
 
     def do(self, args):
         for operation in args:
@@ -118,7 +107,7 @@ class BrainfuckCompiler:
         for i in range(int(times)):
             self.file_output.write('+')
 
-    def sub(self, args): 
+    def sub(self, args):
         times = args[0]
         for i in range(int(times)):
             self.file_output.write('-')
@@ -135,7 +124,6 @@ class BrainfuckCompiler:
         another_tail.insert(0, 'do')
         self.compile(another_tail)
 
-
     def do_before(self, args):
         head, *tail = args
         another_tail = []
@@ -148,19 +136,26 @@ class BrainfuckCompiler:
         another_tail.insert(0, 'do')
         self.compile(another_tail)
 
-    def compile(self, commands=None):
-        if commands is None:
-            commands = self.ast
+    def right(self):
+        self.file_output.write('>')
 
-        head, *tail = commands
+    def left(self):
+        self.file_output.write('<')
 
-        if head in self.node_to_func:
-            self.node_to_func[head]()
-        elif head in self.node_to_func_with_args:
-            self.node_to_func_with_args[head](tail)
+    def inc(self):
+        self.file_output.write('+')
+
+    def dec(self):
+        self.file_output.write('-')
+
+    def dot(self):
+        self.file_output.write('.')
+
+    def comma(self):
+        self.file_output.write(',')
 
     def __init__(self, ast, file_output):
-        
+
         self.file_output = open(file_output, "w")
         self.ast = ast
 
@@ -185,10 +180,22 @@ class BrainfuckCompiler:
 
         self.node_to_func_def = {}
 
+
+# Get archives from terminal
+source_code, lf_code, file_output = argv
+
+#Open the archives
+input_file = open(lf_code)
+code2Compile = input_file.read()
+
+# Run Lexer
 tokens = lexer(code2Compile)
-#Ignore tokens for comment and Space
-tokens = [token for token in tokens if token.type != 'COMMENT' and token.type != 'SPACE']
+
+# Ignore tokens for comment and Space
+tokens = [token for token in tokens if token.type !=
+          'COMMENT' and token.type != 'SPACE']
 tree = parser(tokens)
 
+# Run the compiler
 BrainfuckCompiler = BrainfuckCompiler(tree, file_output)
 BrainfuckCompiler.compile()
